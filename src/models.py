@@ -13,11 +13,11 @@ class User(db.Model):
     username: Mapped[str] = mapped_column(nullable=False)
     FirstName: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     LastName: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    posts = relationship("Post", back_populates="user")
-    comments = relationship("Comment", back_populates="autor")
+    posts: Mapped[list["Post"]] = relationship("Post", back_populates="user")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="autor")
 
-    following = relationship("Followers", foreign_keys="[Followers.user_from_id]", back_populates="user_from")
-    followers = relationship("Followers", foreign_keys="[Followers.user_to_id]", back_populates="user_to")
+    following: Mapped[list["Followers"]] = relationship("Followers", foreign_keys="[Followers.user_from_id]", back_populates="user_from")
+    followers: Mapped[list["Followers"]] = relationship("Followers", foreign_keys="[Followers.user_to_id]", back_populates="user_to")
 
     def serialize(self):
         return {
@@ -84,9 +84,9 @@ class Media(db.Model):
 
 class Followers(db.Model):
     __tablename__ = "followers"
-
-    user_from_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
-    user_to_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_from_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_to_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
 
     user_from = relationship("User", foreign_keys=[user_from_id], back_populates="following")
